@@ -7,11 +7,15 @@ import "./globals.css"
 const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
-// <CHANGE> Updated metadata for immigration form app
 export const metadata: Metadata = {
-  title: "Clasificador de Consultas de Extranjería",
-  description: "Formulario dinámico para clasificar consultas de extranjería en España",
+  title: "Sentir Extranjero | Consultas y contacto",
+  description: "Cuéntanos tu caso y te orientamos en extranjería y nacionalidad.",
   generator: "v0.app",
+  icons: {
+    icon: "/sentir-favicon.png",
+    shortcut: "/sentir-favicon.png",
+    apple: "/sentir-favicon.png",
+  },
 }
 
 export default function RootLayout({

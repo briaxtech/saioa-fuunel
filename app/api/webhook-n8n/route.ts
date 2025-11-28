@@ -51,7 +51,11 @@ export async function POST(request: Request) {
     if (!webhookResponse.ok) {
       console.error("[v0] Webhook error:", webhookResponse.status, responseText)
       return NextResponse.json(
-        { error: "El servicio de webhook devolvio un error", status: webhookResponse.status },
+        {
+          error: "El servicio de webhook devolvio un error",
+          status: webhookResponse.status,
+          body: responseText?.slice(0, 2000) ?? null,
+        },
         { status: 502 },
       )
     }

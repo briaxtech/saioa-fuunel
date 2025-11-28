@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
@@ -13,6 +13,7 @@ import { CATEGORIAS_GENERALES, getTemplatesByCategory, type CategoriaId } from "
 import { CheckCircle2, ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
 
 const FALLBACK_OPTION = "NECESITO_AYUDA_ESPECIFICA"
+const TOTAL_STEPS = 3
 
 interface FormData {
   categoria_general: CategoriaId | null
@@ -33,11 +34,14 @@ export function FunnelForm() {
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle")
   const [errorMessage, setErrorMessage] = useState("")
 
+  const formatTitle = (title: string) => title.replace(/^[IVXLCDM]+\.?\s*/i, "")
+  const progress = useMemo(() => Math.round((step / TOTAL_STEPS) * 100), [step])
+
   const handleCategorySelect = (value: string) => {
     setFormData((prev) => ({
       ...prev,
       categoria_general: value as CategoriaId,
-      template_key_final: null, // Reset template selection when category changes
+      template_key_final: null,
     }))
   }
 
@@ -63,21 +67,18 @@ export function FunnelForm() {
     }
   }
 
-  const validateEmail = (email: string) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-  }
+  const validateEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    // Validation
     if (!validateEmail(formData.email_cliente)) {
       setErrorMessage("Por favor, introduce un email válido.")
       return
     }
 
     if (formData.template_key_final === FALLBACK_OPTION && !formData.consulta_libre.trim()) {
-      setErrorMessage("Por favor, describe tu consulta.")
+      setErrorMessage("Por favor, descríbenos tu consulta.")
       return
     }
 
@@ -116,78 +117,90 @@ export function FunnelForm() {
 
   if (submitStatus === "success") {
     return (
-      <Card className="w-full max-w-2xl mx-auto">
-        <CardContent className="pt-6">
-          <div className="flex flex-col items-center justify-center py-10 text-center">
-            <CheckCircle2 className="w-16 h-16 text-green-500 mb-4" />
-            <h2 className="text-2xl font-bold text-foreground mb-2">¡Consulta Enviada!</h2>
-            <p className="text-muted-foreground">
-              Hemos recibido tu consulta correctamente. Te responderemos lo antes posible al email proporcionado.
-            </p>
-            <Button
-              className="mt-6"
-              onClick={() => {
-                setStep(1)
-                setFormData({
-                  categoria_general: null,
-                  template_key_final: null,
-                  email_cliente: "",
-                  consulta_libre: "",
-                })
-                setSubmitStatus("idle")
-              }}
-            >
-              Enviar otra consulta
-            </Button>
+      <Card className="w-full border-none bg-transparent shadow-none">
+        <CardContent className="flex flex-col items-center justify-center gap-4 py-12 text-center">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/15 text-primary">
+            <CheckCircle2 className="h-8 w-8" />
           </div>
+          <div className="space-y-2">
+            <h2 className="text-2xl font-semibold text-secondary">¡Consulta enviada!</h2>
+            <p className="text-base text-muted-foreground">
+              Hemos recibido tu mensaje. Te responderemos lo antes posible al email proporcionado.
+            </p>
+          </div>
+          <Button
+            className="mt-2"
+            onClick={() => {
+              setStep(1)
+              setFormData({
+                categoria_general: null,
+                template_key_final: null,
+                email_cliente: "",
+                consulta_libre: "",
+              })
+              setSubmitStatus("idle")
+            }}
+          >
+            Enviar otra consulta
+          </Button>
         </CardContent>
       </Card>
     )
   }
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle className="text-xl">Clasificador de Consultas de Extranjería</CardTitle>
-        <CardDescription>Completa los siguientes pasos para clasificar tu consulta</CardDescription>
-        {/* Progress indicator */}
-        <div className="flex items-center gap-2 mt-4">
-          {[1, 2, 3].map((s) => (
-            <div key={s} className="flex items-center">
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
-                  s === step
-                    ? "bg-primary text-primary-foreground"
-                    : s < step
-                      ? "bg-primary/20 text-primary"
-                      : "bg-muted text-muted-foreground"
-                }`}
-              >
-                {s}
-              </div>
-              {s < 3 && (
-                <div className={`w-12 h-1 mx-1 rounded transition-colors ${s < step ? "bg-primary/50" : "bg-muted"}`} />
-              )}
-            </div>
-          ))}
+    <Card className="w-full border-none bg-transparent shadow-none">
+      <CardHeader className="space-y-3 pb-4">
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="rounded-full bg-primary/15 px-4 py-1 text-sm font-semibold text-primary">
+            Formulario de contacto
+          </span>
+          <span className="text-sm font-medium text-muted-foreground">Respuesta habitual en 24h hábiles</span>
+        </div>
+        <CardTitle className="text-3xl text-secondary">Cuéntanos tu consulta</CardTitle>
+        <CardDescription className="text-base text-muted-foreground">
+          Clasificamos tu caso para derivarlo al especialista correcto. Solo necesitamos tres pasos rápidos.
+        </CardDescription>
+        <div className="mt-3 space-y-2">
+          <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <span>Paso {step} de {TOTAL_STEPS}</span>
+            <span>
+              {step === 1 && "Elige el tema"}
+              {step === 2 && "Especifica tu consulta"}
+              {step === 3 && "Datos de contacto"}
+            </span>
+          </div>
+          <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-[#36ccca] via-[#36ccca] to-[#0e2f76] transition-all"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
         </div>
       </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit}>
-          {/* Step 1: Category Selection */}
+      <CardContent className="pb-8">
+        <form onSubmit={handleSubmit} className="space-y-8">
           {step === 1 && (
             <div className="space-y-4">
-              <Label className="text-base font-semibold">Paso 1: Selecciona la categoría de tu consulta</Label>
+              <div className="space-y-1">
+                <Label className="text-base font-semibold text-secondary">Paso 1 · Selecciona la categoría</Label>
+                <p className="text-sm text-muted-foreground">
+                  Cuéntanos a grandes rasgos sobre qué trata tu consulta para dirigirla al área adecuada.
+                </p>
+              </div>
               <RadioGroup
                 value={formData.categoria_general || ""}
                 onValueChange={handleCategorySelect}
                 className="space-y-3"
               >
                 {CATEGORIAS_GENERALES.map((categoria) => (
-                  <div key={categoria.id} className="flex items-start space-x-3">
-                    <RadioGroupItem value={categoria.id} id={categoria.id} className="mt-1" />
-                    <Label htmlFor={categoria.id} className="flex flex-col cursor-pointer">
-                      <span className="font-medium text-foreground">{categoria.titulo}</span>
+                  <div key={categoria.id} className="relative">
+                    <RadioGroupItem value={categoria.id} id={categoria.id} className="peer sr-only" />
+                    <Label
+                      htmlFor={categoria.id}
+                      className="flex cursor-pointer flex-col gap-1 rounded-2xl border border-[#d5dfec] bg-white/80 p-4 text-left shadow-sm transition-all duration-200 active:animate-[press-pop_180ms_ease-out] hover:-translate-y-0.5 hover:border-primary hover:bg-[#e6f8f9] hover:shadow-lg peer-data-[state=checked]:-translate-y-0.5 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-[#d9f3f4] peer-data-[state=checked]:shadow-lg"
+                    >
+                      <span className="text-lg font-semibold text-secondary">{formatTitle(categoria.titulo)}</span>
                       <span className="text-sm text-muted-foreground">{categoria.descripcion}</span>
                     </Label>
                   </div>
@@ -196,29 +209,38 @@ export function FunnelForm() {
             </div>
           )}
 
-          {/* Step 2: Template Selection */}
           {step === 2 && (
             <div className="space-y-4">
-              <Label className="text-base font-semibold">Paso 2: Selecciona el tipo de consulta específica</Label>
+              <div className="space-y-1">
+                <Label className="text-base font-semibold text-secondary">Paso 2 · Tipo de consulta</Label>
+                <p className="text-sm text-muted-foreground">
+                  Elige el escenario que mejor se ajuste o dinos que necesitas una respuesta personalizada.
+                </p>
+              </div>
               <RadioGroup
                 value={formData.template_key_final || ""}
                 onValueChange={handleTemplateSelect}
-                className="space-y-3 max-h-[400px] overflow-y-auto pr-2"
+                className="space-y-3 max-h-[420px] overflow-y-auto pr-2"
               >
                 {templatesForCategory.map((template) => (
-                  <div key={template.template_key} className="flex items-start space-x-3">
-                    <RadioGroupItem value={template.template_key} id={template.template_key} className="mt-1" />
-                    <Label htmlFor={template.template_key} className="flex flex-col cursor-pointer">
-                      <span className="font-medium text-foreground">{template.template_key}</span>
+                  <div key={template.template_key} className="relative">
+                    <RadioGroupItem value={template.template_key} id={template.template_key} className="peer sr-only" />
+                    <Label
+                      htmlFor={template.template_key}
+                      className="flex cursor-pointer flex-col gap-1 rounded-2xl border border-[#d5dfec] bg-white/80 p-4 text-left shadow-sm transition-all duration-200 active:animate-[press-pop_180ms_ease-out] hover:-translate-y-0.5 hover:border-primary hover:bg-[#e6f8f9] hover:shadow-lg peer-data-[state=checked]:-translate-y-0.5 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-[#d9f3f4] peer-data-[state=checked]:shadow-lg"
+                    >
+                      <span className="text-lg font-semibold text-secondary">{template.template_key}</span>
                       <span className="text-sm text-muted-foreground">{template.descripcion}</span>
                     </Label>
                   </div>
                 ))}
-                {/* Fallback option */}
-                <div className="flex items-start space-x-3 pt-3 border-t">
-                  <RadioGroupItem value={FALLBACK_OPTION} id={FALLBACK_OPTION} className="mt-1" />
-                  <Label htmlFor={FALLBACK_OPTION} className="flex flex-col cursor-pointer">
-                    <span className="font-medium text-foreground">Ninguna de estas opciones me sirve</span>
+                <div className="relative">
+                  <RadioGroupItem value={FALLBACK_OPTION} id={FALLBACK_OPTION} className="peer sr-only" />
+                  <Label
+                    htmlFor={FALLBACK_OPTION}
+                    className="flex cursor-pointer flex-col gap-1 rounded-2xl border border-dashed border-[#d5dfec] bg-white/70 p-4 text-left shadow-sm transition-all duration-200 active:animate-[press-pop_180ms_ease-out] hover:-translate-y-0.5 hover:border-primary hover:bg-[#e6f8f9] hover:shadow-lg peer-data-[state=checked]:-translate-y-0.5 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-[#d9f3f4] peer-data-[state=checked]:shadow-lg"
+                  >
+                    <span className="font-semibold text-secondary">Ninguna de estas opciones me sirve</span>
                     <span className="text-sm text-muted-foreground">
                       Quiero describir mi consulta de forma personalizada
                     </span>
@@ -228,10 +250,14 @@ export function FunnelForm() {
             </div>
           )}
 
-          {/* Step 3: Contact Info & Free Text */}
           {step === 3 && (
             <div className="space-y-6">
-              <Label className="text-base font-semibold">Paso 3: Datos de contacto</Label>
+              <div className="space-y-1">
+                <Label className="text-base font-semibold text-secondary">Paso 3 · Datos de contacto</Label>
+                <p className="text-sm text-muted-foreground">
+                  Déjanos tu email para enviarte la respuesta y los siguientes pasos.
+                </p>
+              </div>
 
               <div className="space-y-2">
                 <Label htmlFor="email">Email *</Label>
@@ -259,35 +285,38 @@ export function FunnelForm() {
                 </div>
               )}
 
-              {errorMessage && <p className="text-sm text-destructive">{errorMessage}</p>}
+              {errorMessage && (
+                <p className="text-sm font-medium text-destructive" role="alert">
+                  {errorMessage}
+                </p>
+              )}
             </div>
           )}
 
-          {/* Navigation buttons */}
-          <div className="flex justify-between mt-6 pt-4 border-t">
+          <div className="flex flex-col gap-3 pt-3 sm:flex-row sm:items-center sm:justify-between sm:pt-0">
             <Button type="button" variant="outline" onClick={handleBack} disabled={step === 1}>
-              <ChevronLeft className="w-4 h-4 mr-1" />
+              <ChevronLeft className="mr-1 h-4 w-4" />
               Anterior
             </Button>
 
-            {step < 3 ? (
+            {step < TOTAL_STEPS ? (
               <Button
                 type="button"
                 onClick={handleNext}
                 disabled={(step === 1 && !formData.categoria_general) || (step === 2 && !formData.template_key_final)}
               >
                 Siguiente
-                <ChevronRight className="w-4 h-4 ml-1" />
+                <ChevronRight className="ml-1 h-4 w-4" />
               </Button>
             ) : (
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Enviando...
                   </>
                 ) : (
-                  "Enviar Consulta"
+                  "Enviar consulta"
                 )}
               </Button>
             )}
