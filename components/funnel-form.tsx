@@ -127,6 +127,9 @@ export function FunnelForm() {
             <p className="text-base text-muted-foreground">
               Hemos recibido tu mensaje. Te responderemos lo antes posible al email proporcionado.
             </p>
+            <div className="rounded-xl border border-dashed border-primary/50 bg-primary/5 px-4 py-3 text-sm text-muted-foreground">
+              No olvides revisar tu carpeta de correo no deseado o spam si no ves nuestra respuesta en tu bandeja de entrada.
+            </div>
           </div>
           <Button
             className="mt-2"
