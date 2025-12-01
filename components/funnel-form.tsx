@@ -201,7 +201,7 @@ export function FunnelForm() {
                     <RadioGroupItem value={categoria.id} id={categoria.id} className="peer sr-only" />
                     <Label
                       htmlFor={categoria.id}
-                      className="flex cursor-pointer flex-col gap-1 rounded-2xl border border-[#d5dfec] bg-white/80 p-4 text-left shadow-sm transition-all duration-200 active:animate-[press-pop_180ms_ease-out] hover:-translate-y-0.5 hover:border-primary hover:bg-[#e6f8f9] hover:shadow-lg peer-data-[state=checked]:-translate-y-0.5 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-[#d9f3f4] peer-data-[state=checked]:shadow-lg"
+                      className="flex cursor-pointer flex-col items-start gap-1 rounded-2xl border border-[#d5dfec] bg-white/80 p-4 text-left shadow-sm transition-all duration-200 active:animate-[press-pop_180ms_ease-out] hover:-translate-y-0.5 hover:border-primary hover:bg-[#e6f8f9] hover:shadow-lg peer-data-[state=checked]:-translate-y-0.5 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-[#d9f3f4] peer-data-[state=checked]:shadow-lg"
                     >
                       <span className="text-lg font-semibold text-secondary">{formatTitle(categoria.titulo)}</span>
                       <span className="text-sm text-muted-foreground">{categoria.descripcion}</span>
@@ -230,7 +230,7 @@ export function FunnelForm() {
                     <RadioGroupItem value={template.template_key} id={template.template_key} className="peer sr-only" />
                     <Label
                       htmlFor={template.template_key}
-                      className="flex cursor-pointer flex-col gap-1 rounded-2xl border border-[#d5dfec] bg-white/80 p-4 text-left shadow-sm transition-all duration-200 active:animate-[press-pop_180ms_ease-out] hover:-translate-y-0.5 hover:border-primary hover:bg-[#e6f8f9] hover:shadow-lg peer-data-[state=checked]:-translate-y-0.5 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-[#d9f3f4] peer-data-[state=checked]:shadow-lg"
+                      className="flex cursor-pointer flex-col items-start gap-1 rounded-2xl border border-[#d5dfec] bg-white/80 p-4 text-left shadow-sm transition-all duration-200 active:animate-[press-pop_180ms_ease-out] hover:-translate-y-0.5 hover:border-primary hover:bg-[#e6f8f9] hover:shadow-lg peer-data-[state=checked]:-translate-y-0.5 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-[#d9f3f4] peer-data-[state=checked]:shadow-lg"
                     >
                       <span className="text-lg font-semibold text-secondary">{template.template_key}</span>
                       <span className="text-sm text-muted-foreground">{template.descripcion}</span>
@@ -241,7 +241,7 @@ export function FunnelForm() {
                   <RadioGroupItem value={FALLBACK_OPTION} id={FALLBACK_OPTION} className="peer sr-only" />
                   <Label
                     htmlFor={FALLBACK_OPTION}
-                    className="flex cursor-pointer flex-col gap-1 rounded-2xl border border-dashed border-[#d5dfec] bg-white/70 p-4 text-left shadow-sm transition-all duration-200 active:animate-[press-pop_180ms_ease-out] hover:-translate-y-0.5 hover:border-primary hover:bg-[#e6f8f9] hover:shadow-lg peer-data-[state=checked]:-translate-y-0.5 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-[#d9f3f4] peer-data-[state=checked]:shadow-lg"
+                    className="flex cursor-pointer flex-col items-start gap-1 rounded-2xl border border-dashed border-[#d5dfec] bg-white/70 p-4 text-left shadow-sm transition-all duration-200 active:animate-[press-pop_180ms_ease-out] hover:-translate-y-0.5 hover:border-primary hover:bg-[#e6f8f9] hover:shadow-lg peer-data-[state=checked]:-translate-y-0.5 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-[#d9f3f4] peer-data-[state=checked]:shadow-lg"
                   >
                     <span className="font-semibold text-secondary">Ninguna de estas opciones me sirve</span>
                     <span className="text-sm text-muted-foreground">
